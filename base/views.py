@@ -143,3 +143,14 @@ def stripe_payment_verify(request,biling_id):
     else:
         return redirect(f"/payment_status/{biling.biling_id}/?patment_status=failed")
 
+@login_required
+def payment_status(request,biling_id):
+    biling = base_models.Billing.objects.get(biling_id=biling_id)
+    paymet_status = request.GET.get("payment_status")
+    
+    context = {
+        "biling":biling,
+        "payment_status":payment_status,
+    }
+
+    return render(request,"base/payment_status.html",context=context)
