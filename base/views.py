@@ -116,3 +116,30 @@ def stripe_payment(request,biling_id):
         cancel_url = request.build_absolute_url(reverse("base.stripe_payment_verify"),args=[billing.biling_id]),
     )
     return JsonResponse({"sessionId": checkout_session.id})
+
+
+def stripe_payment_verify(request,biling_id):
+    biling = base_models.Billing.objects.get(biling_id=biling_id)
+    session_id = request.Get.get("session_id")
+    session = stripe.checkout.Session.retrieve(session_id)
+
+    if session.payment_status == "paid":
+        if biling.status == "Unpaid":
+            biling.status == "Paid"
+            biling.save()
+
+            doctor_model.Notification.objects.create(
+                doctor=biling.appointment.doctor,
+                appointment=biling.appointment,
+                type="New Appointment",
+            )
+            patient_model.Notification.objects.create(
+                patient=biling.appointment.patient,
+                appointment=biling.appointment,
+                type="Appointment Scheduled",
+            )
+
+            return redirect(f"/payment_status/{biling.biling_id}/?patment_status=paid")
+    else:
+        return redirect(f"/payment_status/{biling.biling_id}/?patment_status=failed")
+
