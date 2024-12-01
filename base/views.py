@@ -112,8 +112,8 @@ def stripe_payment(request,biling_id):
             }
         ],
         mode='payment',
-        success_url = request.build_absolute_url(reverse("base.stripe_payment_verify"),args=[billing.biling_id]) + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url = request.build_absolute_url(reverse("base.stripe_payment_verify"),args=[billing.biling_id]),
+        success_url = request.build_absolute_url(reverse("base:stripe_payment_verify"),args=[billing.biling_id]) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url = request.build_absolute_url(reverse("base:stripe_payment_verify"),args=[billing.biling_id])
     )
     return JsonResponse({"sessionId": checkout_session.id})
 
